@@ -48,6 +48,9 @@ class ProductController extends Controller
         //     'price' => $request->price,
         //     'category_id' => $request->category_id,
         // ]);
+
+        $this->authorize('if_moderator');
+
         $product = Product::create($request->toArray());
 
         return response()->json([
@@ -82,6 +85,7 @@ class ProductController extends Controller
         //         'price' => 'Your Price is too low',
         //     ]);
         // }
+        $this->authorize('if_admin');
 
         $product->update($request->toArray());
 
@@ -99,6 +103,8 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
+        $this->authorize('if_admin');
+        
         $product->delete();
 
         return response()->json([
