@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Http\Requests\ProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductSingleResource;
+use Illuminate\Validation\ValidationException;
 
 class ProductController extends Controller
 {
@@ -26,9 +29,26 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        //
+        if ($request->price <= 10000) {
+            throw ValidationException::withMessages([
+                'price' => 'Your Price is too low',
+            ]);
+        }
+
+        // $product = Product::create([
+        //     'name' => $request->name,
+        //     'description' => $request->description,
+        //     'price' => $request->price,
+        //     'category_id' => $request->category_id,
+        // ]);
+        $product = Product::create($request->toArray());
+
+        return response()->json([
+            'message' => 'success added product',
+            'product' => new ProductSingleResource($product),
+        ]);
     }
 
     /**
